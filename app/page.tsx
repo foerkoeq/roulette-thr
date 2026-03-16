@@ -190,8 +190,8 @@ export default function App() {
         <div className="bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full inline-block mb-3 border border-white/30 shadow-lg">
           <h2 className="text-yellow-100 font-bold tracking-widest text-sm uppercase">Spesial Lebaran</h2>
         </div>
-        <h1 className="text-4xl md:text-5xl font-black text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.3)]">
-          Roulette <span className="text-yellow-300">THR</span>
+        <h1 className="text-3xl md:text-5xl font-black text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.3)] leading-tight">
+          <span className="text-yellow-300">THR</span> KELUARGA MAS FARUQ
         </h1>
         <p className="text-green-50 mt-2 font-medium">Bagi-bagi rejeki buat anak sholeh!</p>
         <p className="text-yellow-200 mt-1 text-sm font-bold animate-pulse mt-4 bg-black/20 rounded-full inline-block px-4 py-1">
@@ -234,10 +234,13 @@ export default function App() {
                   </g>
                 );
               })}
-              <circle cx={center} cy={center} r="25" fill="#fef08a" stroke="#ca8a04" strokeWidth="6" />
-              <circle cx={center} cy={center} r="10" fill="#ca8a04" />
+              <circle cx={center} cy={center} r="35" fill="#ffffff" stroke="#eab308" strokeWidth="4" />
             </svg>
           )}
+          
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <img src="/logo.png" alt="Logo" className="w-16 h-16 rounded-full object-cover z-20 shadow-sm" />
+          </div>
         </div>
       </div>
 
@@ -249,6 +252,10 @@ export default function App() {
         <div className="relative bg-gradient-to-b from-yellow-300 to-yellow-500 text-yellow-900 px-10 py-4 rounded-full font-black text-2xl uppercase tracking-wider border-2 border-yellow-200 shadow-xl flex items-center gap-2">
           {isSpinning ? 'Memutar...' : 'Putar Sekarang!'}
         </div>
+      </div>
+
+      <div className="mt-12 z-10 text-white/80 text-sm font-medium tracking-wide pointer-events-none">
+        Coded with ⚡ by Mas Faruq
       </div>
 
       {showModal && prize && (
