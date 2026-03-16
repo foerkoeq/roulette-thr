@@ -239,7 +239,7 @@ export default function App() {
           )}
           
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <img src="/logo.png" alt="Logo" className="w-16 h-16 rounded-full object-cover z-20 shadow-sm" />
+            <img src="/LOGO.png" alt="Logo" className="w-16 h-16 rounded-full object-cover z-20 shadow-sm" />
           </div>
         </div>
       </div>
