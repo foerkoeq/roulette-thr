@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 
 // Type declarations
@@ -22,14 +22,17 @@ interface SliceData extends Prize {
 // Data pecahan uang THR dengan tambahan "weight" (probabilitas/ukuran potongan dalam persentase)
 // Total weight harus 100
 const prizes: Prize[] = [
-  { id: 0, amount: "1.000", note: "Pecahan 1.000", color: "#F1C40F", textColor: "#6E2C00", weight: 25 }, 
-  { id: 1, amount: "2.000", note: "Pecahan 2.000", color: "#95A5A6", textColor: "#1B2631", weight: 25 }, 
-  { id: 2, amount: "4.000", note: "Pecahan 4.000", color: "#2ECC71", textColor: "#145A32", weight: 15 }, 
-  { id: 3, amount: "5.000", note: "Pecahan 5.000", color: "#D35400", textColor: "#FDEDEC", weight: 12 }, 
-  { id: 4, amount: "10.000", note: "Pecahan 10.000", color: "#9B59B6", textColor: "#F4ECF7", weight: 10 }, 
-  { id: 5, amount: "20.000", note: "Pecahan 20.000", color: "#27AE60", textColor: "#EAFAF1", weight: 7 }, 
-  { id: 6, amount: "50.000", note: "Pecahan 50.000", color: "#3498DB", textColor: "#EBF5FB", weight: 4 }, 
-  { id: 7, amount: "100.000", note: "Pecahan 100.000", color: "#E74C3C", textColor: "#FDEDEC", weight: 2 }, 
+  { id: 0, amount: "1.000", note: "Loh, Kok Bisa?", color: "#F1C40F", textColor: "#6E2C00", weight: 2 }, 
+  { id: 1, amount: "1.000", note: "Lah, kok dapet ini?", color: "#F1C40F", textColor: "#6E2C00", weight: 2 }, 
+  { id: 2, amount: "1.000", note: "Wah,  Langka Nih", color: "#F1C40F", textColor: "#6E2C00", weight: 2 }, 
+  { id: 3, amount: "2.000", note: "Buat Beli Es", color: "#95A5A6", textColor: "#1B2631", weight: 3 },
+  { id: 4, amount: "2.000", note: "Buat Beli Permen", color: "#95A5A6", textColor: "#1B2631", weight: 3 }, 
+  { id: 5, amount: "4.000", note: "Lumayan Banget", color: "#2ECC71", textColor: "#145A32", weight: 25 }, 
+  { id: 6, amount: "5.000", note: "Bisa Jajan Ciki", color: "#D35400", textColor: "#FDEDEC", weight: 24 }, 
+  { id: 7, amount: "10.000", note: "Dapat Ceban Bos!", color: "#9B59B6", textColor: "#F4ECF7", weight: 16 }, 
+  { id: 8, amount: "20.000", note: "Wah Mantap Nih", color: "#27AE60", textColor: "#EAFAF1", weight: 10 }, 
+  { id: 9, amount: "50.000", note: "SUPER WIN!", color: "#3498DB", textColor: "#EBF5FB", weight: 7 }, 
+  { id: 10, amount: "100.000", note: "KASIH PAHAM BOS!!!", color: "#E74C3C", textColor: "#FDEDEC", weight: 6 }, 
 ];
 
 // Komponen Ilustrasi Uang Kartun
@@ -64,6 +67,12 @@ export default function App() {
   const [prize, setPrize] = useState<SliceData | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [wheelData, setWheelData] = useState<SliceData[]>([]);
+  const [gameStarted, setGameStarted] = useState(false);
+
+  // Audio Refs
+  const bgmRef = useRef<HTMLAudioElement | null>(null);
+  const spinRef = useRef<HTMLAudioElement | null>(null);
+  const winRef = useRef<HTMLAudioElement | null>(null);
 
   const size = 320;
   const center = size / 2;
@@ -97,6 +106,40 @@ export default function App() {
     setWheelData(slices);
   }, []);
 
+  const startGame = () => {
+    if (gameStarted) return;
+    
+    // Pilih BGM secara acak dari bgm1, bgm2, bgm3, bgm4
+    const randomBgm = Math.floor(Math.random() * 4) + 1;
+    bgmRef.current = new Audio(`/sounds/bgm${randomBgm}.mp3`);
+    bgmRef.current.loop = true;
+    bgmRef.current.volume = 0.5;
+    bgmRef.current.play().catch(e => console.error("Audio play failed:", e));
+    
+    // Siapkan efek suara spin
+    spinRef.current = new Audio('/sounds/spin.mp3');
+    spinRef.current.volume = 0.8;
+    
+    setGameStarted(true);
+  };
+
+  const getWinSound = (id: number) => {
+    switch(id) {
+      case 0: return '/sounds/1k1.mp3';
+      case 1: return '/sounds/1k2.mp3';
+      case 2: return '/sounds/1k3.mp3';
+      case 3: return '/sounds/2k1.mp3';
+      case 4: return '/sounds/2k2.mp3';
+      case 5: return '/sounds/4k.mp3';
+      case 6: return '/sounds/5k.mp3';
+      case 7: return '/sounds/10k.mp3';
+      case 8: return '/sounds/20k.mp3';
+      case 9: return '/sounds/50k.mp3';
+      case 10: return '/sounds/100k.mp3';
+      default: return null;
+    }
+  };
+
   // Fungsi membuat bentuk potongan pie SVG dengan ukuran dinamis
   const createSlice = (startAngle: number, endAngle: number) => {
     const startRad = (Math.PI / 180) * startAngle;
@@ -127,8 +170,23 @@ export default function App() {
   };
 
   const spinWheel = () => {
+    if (!gameStarted) {
+      startGame();
+      return;
+    }
     if (isSpinning || wheelData.length === 0 || showModal) return;
     setIsSpinning(true);
+    
+    // Hentikan BGM sementara roda berputar
+    if (bgmRef.current) {
+      bgmRef.current.pause();
+    }
+    
+    // Mainkan SFX putar
+    if (spinRef.current) {
+      spinRef.current.currentTime = 0;
+      spinRef.current.play().catch(e => console.error(e));
+    }
     
     // Tentukan pemenang berdasarkan sistem tiket/probabilitas
     const rand = Math.random() * 100;
@@ -167,10 +225,40 @@ export default function App() {
 
     setTimeout(() => {
       setIsSpinning(false);
+      
+      // Hentikan SFX spin jika masih menyala (walaupun durasi spin.mp3 biasanya memang pendek)
+      if (spinRef.current) {
+        spinRef.current.pause();
+        spinRef.current.currentTime = 0;
+      }
+      
+      // Mainkan SFX Hadiah
+      const winSoundPath = getWinSound(selectedPrize.id);
+      if (winSoundPath) {
+        winRef.current = new Audio(winSoundPath);
+        winRef.current.play().catch(e => console.error(e));
+      }
+      
       setPrize(selectedPrize);
       setShowModal(true);
       if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
     }, 5000); // 5 detik animasi berhenti
+  };
+
+  const handleCloseModal = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowModal(false);
+    
+    // Hentikan SFX Hadiah
+    if (winRef.current) {
+      winRef.current.pause();
+      winRef.current.currentTime = 0;
+    }
+    
+    // Mulai lagi BGM
+    if (bgmRef.current) {
+      bgmRef.current.play().catch(e => console.error(e));
+    }
   };
 
   return (
@@ -179,6 +267,17 @@ export default function App() {
       className="min-h-screen bg-gradient-to-br from-teal-500 via-green-500 to-emerald-700 flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans cursor-pointer"
       onClick={spinWheel}
     >
+      {!gameStarted && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-md">
+          <div className="text-center animate-bounce">
+            <button className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-black text-3xl px-12 py-6 rounded-full shadow-[0_0_40px_rgba(250,204,21,0.6)] border-4 border-white transition-transform active:scale-95">
+              MULAI
+            </button>
+            <p className="text-white mt-4 font-bold text-lg drop-shadow-md bg-black/30 px-4 py-1 rounded-full inline-block">Tap dimana saja untuk mulai</p>
+          </div>
+        </div>
+      )}
+
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 left-10 text-yellow-300 text-4xl opacity-50 animate-pulse">✨</div>
         <div className="absolute top-32 right-12 text-yellow-300 text-3xl opacity-40 animate-pulse delay-100">✨</div>
@@ -191,7 +290,7 @@ export default function App() {
           <h2 className="text-yellow-100 font-bold tracking-widest text-sm uppercase">Spesial Lebaran</h2>
         </div>
         <h1 className="text-3xl md:text-5xl font-black text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.3)] leading-tight">
-          <span className="text-yellow-300">THR</span> KELUARGA MAS FARUQ
+          <span className="text-yellow-300">THR</span> DARI BANI ALFARUQI
         </h1>
         <p className="text-green-50 mt-2 font-medium">Bagi-bagi rejeki buat anak sholeh!</p>
         <p className="text-yellow-200 mt-1 text-sm font-bold animate-pulse mt-4 bg-black/20 rounded-full inline-block px-4 py-1">
@@ -262,8 +361,7 @@ export default function App() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-[fadeIn_0.3s_ease-out]"
              onClick={(e) => {
                // Hentikan event klik agar tidak langsung memutar roda lagi saat menutup modal
-               e.stopPropagation(); 
-               setShowModal(false);
+               handleCloseModal(e);
              }}>
           <div className="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full text-center relative shadow-2xl animate-[slideUp_0.4s_cubic-bezier(0.175,0.885,0.32,1.275)] overflow-hidden"
                onClick={(e) => e.stopPropagation()} // Mencegah tap di dalam box menutup modal
@@ -278,10 +376,7 @@ export default function App() {
               <MoneyCartoon amount={prize.amount} note={prize.note} color={prize.color} />
               
               <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowModal(false);
-                }}
+                onClick={handleCloseModal}
                 className="w-full bg-green-500 hover:bg-green-600 text-white font-bold text-lg py-4 rounded-2xl shadow-lg transition-transform active:scale-95 mt-2"
               >
                 Ambil THR & Main Lagi
