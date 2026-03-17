@@ -28,11 +28,11 @@ const prizes: Prize[] = [
   { id: 3, amount: "2.000", note: "Buat Beli Es", color: "#95A5A6", textColor: "#1B2631", weight: 3 },
   { id: 4, amount: "2.000", note: "Buat Beli Permen", color: "#95A5A6", textColor: "#1B2631", weight: 3 }, 
   { id: 5, amount: "4.000", note: "Lumayan Banget", color: "#2ECC71", textColor: "#145A32", weight: 25 }, 
-  { id: 6, amount: "5.000", note: "Bisa Jajan Ciki", color: "#D35400", textColor: "#FDEDEC", weight: 24 }, 
-  { id: 7, amount: "10.000", note: "Dapat Ceban Bos!", color: "#9B59B6", textColor: "#F4ECF7", weight: 16 }, 
+  { id: 6, amount: "5.000", note: "Bisa Jajan Ciki", color: "#D35400", textColor: "#FDEDEC", weight: 25 }, 
+  { id: 7, amount: "10.000", note: "Dapat Ceban Bos!", color: "#9B59B6", textColor: "#F4ECF7", weight: 17 }, 
   { id: 8, amount: "20.000", note: "Wah Mantap Nih", color: "#27AE60", textColor: "#EAFAF1", weight: 10 }, 
-  { id: 9, amount: "50.000", note: "SUPER WIN!", color: "#3498DB", textColor: "#EBF5FB", weight: 7 }, 
-  { id: 10, amount: "100.000", note: "KASIH PAHAM BOS!!!", color: "#E74C3C", textColor: "#FDEDEC", weight: 6 }, 
+  { id: 9, amount: "50.000", note: "SUPER WIN!", color: "#3498DB", textColor: "#EBF5FB", weight: 6 }, 
+  { id: 10, amount: "100.000", note: "KASIH PAHAM BOS!!!", color: "#E74C3C", textColor: "#FDEDEC", weight: 5 }, 
 ];
 
 // Komponen Ilustrasi Uang Kartun
@@ -73,6 +73,7 @@ export default function App() {
   const bgmRef = useRef<HTMLAudioElement | null>(null);
   const spinRef = useRef<HTMLAudioElement | null>(null);
   const winRef = useRef<HTMLAudioElement | null>(null);
+  const currentBgmIndexRef = useRef<number>(1);
 
   const size = 320;
   const center = size / 2;
@@ -109,11 +110,26 @@ export default function App() {
   const startGame = () => {
     if (gameStarted) return;
     
-    // Pilih BGM secara acak dari bgm1, bgm2, bgm3, bgm4
+    // Pilih BGM awal secara acak dari bgm1, bgm2, bgm3, bgm4
     const randomBgm = Math.floor(Math.random() * 4) + 1;
-    bgmRef.current = new Audio(`/sounds/bgm${randomBgm}.mp3`);
-    bgmRef.current.loop = true;
+    currentBgmIndexRef.current = randomBgm;
+    
+    bgmRef.current = new Audio(`/sounds/bgm${currentBgmIndexRef.current}.mp3`);
     bgmRef.current.volume = 0.5;
+    
+    // Set index untuk BGM selanjutnya
+    currentBgmIndexRef.current = (randomBgm % 4) + 1;
+    
+    // Mainkan lagu berikutnya saat lagu saat ini selesai
+    bgmRef.current.addEventListener('ended', function playNext() {
+      if (bgmRef.current) {
+        bgmRef.current.src = `/sounds/bgm${currentBgmIndexRef.current}.mp3`;
+        bgmRef.current.load();
+        bgmRef.current.play().catch(e => console.error("Audio play failed:", e));
+        currentBgmIndexRef.current = (currentBgmIndexRef.current % 4) + 1;
+      }
+    });
+
     bgmRef.current.play().catch(e => console.error("Audio play failed:", e));
     
     // Siapkan efek suara spin
