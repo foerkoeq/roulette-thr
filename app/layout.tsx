@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -7,17 +7,21 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Roulette THR - Keluarga Mas Faruq",
-  description: "Bagi-bagi rejeki buat anak sholeh! Spesial Lebaran.",
+  title: "Ice Breaking FANAMA",
+  description:
+    "Kumpulan permainan ice breaking seru untuk perjalanan bus bersama FANAMA!",
   icons: {
-    icon: "/LOGO.png",
+    icon: "/favicon.ico",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#0f172a",
 };
 
 export default function RootLayout({
@@ -26,12 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="id">
+      <body className={`${geistSans.variable} antialiased`}>{children}</body>
     </html>
   );
 }
