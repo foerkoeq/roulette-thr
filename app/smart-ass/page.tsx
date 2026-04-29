@@ -9,6 +9,34 @@ interface Question {
   answer: string;
 }
 
+const EXAMPLE_QUESTIONS: Question[] = [
+  {
+    clues: [
+      'Aku adalah benda yang sangat penting bagi negara kita.',
+      'Aku biasanya terbuat dari selembar kain.',
+      'Bentukku adalah persegi panjang.',
+      'Aku selalu dikibarkan di sekolah setiap hari Senin.',
+      'Saat aku naik ke tiang, semua murid wajib memberi hormat.',
+      'Lagu "Indonesia Raya" selalu dinyanyikan untuk mengiringiku.',
+      'Aku hanya terdiri dari dua warna saja.',
+    ],
+    answer: 'Bendera Merah Putih',
+  },
+  {
+    clues: [
+      'Aku adalah seorang pahlawan nasional dari kalangan militer.',
+      'Aku adalah putra daerah kebanggaan yang lahir di Kabupaten Tuban.',
+      'Pangkat tertinggiku di tentara adalah seorang Jenderal.',
+      'Aku pernah bertugas sebagai Menteri Dalam Negeri Republik Indonesia.',
+      'Aku sangat dikenal dalam peristiwa sejarah penting pada tahun 1966.',
+      'Saat itu, aku menemui Presiden Soekarno di Istana Bogor bersama dua jenderal lainnya.',
+      'Aku adalah salah satu jenderal pembawa surat bersejarah yang bernama Supersemar.',
+      'Namaku sangat terkenal karena sering dijadikan nama jalan utama di kota-kota besar seperti Surabaya!',
+    ],
+    answer: 'Jenderal Basuki Rahmat',
+  },
+];
+
 const QUESTIONS: Question[] = [
   {
     clues: [
@@ -362,7 +390,9 @@ export default function SmartAssPage() {
   const [questionIndex, setQuestionIndex] = useState(0);
 
   /** Shuffle order on mount */
-  const shuffledQuestions = useMemo(() => shuffleArray(QUESTIONS), []);
+  const shuffledQuestions = useMemo(() => {
+    return [...EXAMPLE_QUESTIONS, ...shuffleArray(QUESTIONS)];
+  }, []);
 
   const currentQuestion = shuffledQuestions[questionIndex % shuffledQuestions.length];
 
