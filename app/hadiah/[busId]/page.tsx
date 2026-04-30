@@ -3,6 +3,7 @@
 import { use, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Player } from '@lottiefiles/react-lottie-player';
 import HomeButton from '@/app/components/HomeButton';
 import RouletteWheel from '@/app/hadiah/RouletteWheel';
 import { BUS_PRIZES, type Prize } from '@/app/hadiah/data';
@@ -15,6 +16,8 @@ function ResultModal({
   prize: Prize;
   onClose: () => void;
 }) {
+  const isLottie = prize.image.endsWith('.json');
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-5">
       {/* Backdrop */}
@@ -38,16 +41,26 @@ function ResultModal({
 
         {/* Prize image */}
         <div className="relative w-40 h-40 mx-auto mb-6 rounded-2xl overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center">
-          <Image
-            src={prize.image}
-            alt={prize.name}
-            fill
-            className="object-contain p-3"
-            onError={(e) => {
-              // Fallback: hide broken images gracefully
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
+          {isLottie ? (
+            <Player
+              src={prize.image}
+              autoplay
+              loop
+              style={{ height: '100%', width: '100%' }}
+              className="p-2 relative z-10"
+            />
+          ) : (
+            <Image
+              src={prize.image}
+              alt={prize.name}
+              fill
+              className="object-contain p-3 relative z-10"
+              onError={(e) => {
+                // Fallback: hide broken images gracefully
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+          )}
           {/* Fallback emoji if image not found */}
           <span className="absolute text-6xl opacity-20 pointer-events-none">
             🎁
