@@ -111,6 +111,49 @@ export default function LandingPage() {
         ))}
       </nav>
 
+      {/* Hadiah / Prize roulette link */}
+      <div className="w-full max-w-md mt-6 animate-fade-in-up stagger-5">
+        <Link
+          href="/hadiah"
+          className="
+            block w-full rounded-2xl overflow-hidden
+            bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500
+            shadow-lg shadow-amber-500/20
+            active:scale-[0.97] transition-transform duration-150
+          "
+        >
+          <div className="flex items-center gap-4 px-5 py-4">
+            <span className="text-3xl flex-shrink-0" aria-hidden="true">
+              🎁
+            </span>
+
+            <div className="flex-1 min-w-0">
+              <h2 className="text-white font-bold text-lg leading-tight">
+                HADIAH
+              </h2>
+              <p className="text-white/80 text-sm mt-0.5 leading-snug">
+                Putar roda &amp; dapatkan hadiahmu!
+              </p>
+            </div>
+
+            <svg
+              className="w-5 h-5 text-white/60 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M8.25 4.5l7.5 7.5-7.5 7.5"
+              />
+            </svg>
+          </div>
+        </Link>
+      </div>
+
       {/* Footer */}
       <p className="text-slate-600 text-xs mt-12 animate-fade-in">
         Made with ⚡ for FANAMA
